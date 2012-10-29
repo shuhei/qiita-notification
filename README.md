@@ -1,4 +1,8 @@
-# Installation
+# Qiita Notification
+
+A Chrome extension that shows notifications from Qiita.
+
+## Installation
 
 1. Download/clone the source code.
 2. Open Google Chrome.
