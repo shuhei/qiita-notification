@@ -22,15 +22,15 @@ function fetchNotifications() {
 
 var actions = {
   'stock': {
-    before: 'があなたの投稿',
+    before: ' があなたの投稿',
     after: 'を<span class="verb">ストック</span>しました。'
   },
   'update_posted_chunk': {
-    before: 'があなたのコメントした投稿',
+    before: ' があなたのコメントした投稿',
     after: 'に<span class="verb">コメント</span>しました。'
   },
   'follow_user': {
-    body: 'があなたをフォローしました。'
+    body: ' があなたをフォローしました。'
   }
 };
 
@@ -38,7 +38,7 @@ function showItems(items) {
   items.forEach(function (item) {
     var p = document.createElement("p");
     var userNames = item.users.map(function (user) {
-      return '<span class="username">' + user.name + '</span>';
+      return '<span class="username">' + user.url_name + '</span>';
     }).join(', ');
     console.log(item);
     var action = actions[item.action];
