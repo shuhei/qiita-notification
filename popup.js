@@ -6,7 +6,7 @@ function fetchNotifications() {
       var items;
       try {
         items = JSON.parse(req.responseText);
-        console.log(items);
+        
         notifyRead();
       } catch (e) {
         needLogin();
