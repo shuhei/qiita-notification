@@ -6,6 +6,7 @@ function fetchNotifications() {
       var items;
       try {
         items = JSON.parse(req.responseText);
+        console.log(items);
         notifyRead();
       } catch (e) {
         needLogin();
@@ -31,6 +32,14 @@ var actions = {
   },
   'follow_user': {
     body: ' があなたをフォローしました。'
+  },
+  'reply': {
+    before: ' があなたの投稿',
+    after: 'に<span class="verb">コメント</span>しました。'
+  },
+  'receive_patch': {
+    before: ' があなたの投稿',
+    after: 'へ<span class="verb">編集リクエストを</span>送りました。'
   }
 };
 
