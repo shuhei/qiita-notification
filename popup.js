@@ -1,12 +1,11 @@
 function fetchNotifications() {
   var req = new XMLHttpRequest();
-  req.open("GET", "https://qiita.com/api/notifications", true);
+  req.open('GET', 'https://qiita.com/api/notifications', true);
   req.onload = function () {
     if (req.status === 200) {
       var items;
       try {
         items = JSON.parse(req.responseText);
-        
         notifyRead();
       } catch (e) {
         needLogin();
@@ -45,11 +44,11 @@ var actions = {
 
 function showItems(items) {
   items.forEach(function (item) {
+    console.log(item);
     var p = document.createElement("p");
     var userNames = item.users.map(function (user) {
       return '<span class="username">' + user.url_name + '</span>';
     }).join(', ');
-    console.log(item);
     var action = actions[item.action];
     var message;
     if (action.before && action.after) {
@@ -70,7 +69,7 @@ function showItems(items) {
 
 function notifyRead() {
   var req = new XMLHttpRequest();
-  req.open("GET", "https://qiita.com/api/notifications/read", true);
+  req.open('GET', 'https://qiita.com/api/notifications/read', true);
   req.onload = function () {
     if (req.status === 200) {
       chrome.extension.sendMessage({ type: 'read' });
@@ -83,7 +82,7 @@ function notifyRead() {
 }
 
 function needLogin() {
-  var p = document.createElement("p");
+  var p = document.createElement('p');
   p.innerHTML = '<a href="http://qiita.com/" target="_blank">ログインしてください。</a>';
   document.body.appendChild(p);
 }
