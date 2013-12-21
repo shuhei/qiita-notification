@@ -15,12 +15,12 @@ function fetchNotifications() {
       showItems(items);
     } else {
       console.log('Failed to fetch notifications with status ' + req.status + '.');
-      showMessage('通知の取得に失敗しました。');
+      showError('通知の取得に失敗しました。');
     }
   };
   req.onerror = function () {
     console.log('Error on fetching notifications.');
-    showMessage('通知の取得に失敗しました。');
+    showError('通知の取得に失敗しました。');
   };
   req.send(null);
 }
@@ -48,6 +48,7 @@ var actions = {
 };
 
 function showItems(items) {
+  document.body.innerHTML = '';
   items.forEach(function (item) {
     console.log(item);
     var p = document.createElement("p");
@@ -95,6 +96,11 @@ function notifyRead() {
 
 function needLogin() {
   showMessage('<a href="http://qiita.com/" target="_blank">ログインしてください。</a>');
+}
+
+function showError(message) {
+  var html = '<span class="no-link">' + message + '</span>';
+  showMessage(html);
 }
 
 function showMessage(message) {
