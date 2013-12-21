@@ -8,14 +8,19 @@ function fetchNotifications() {
         items = JSON.parse(req.responseText);
         notifyRead();
       } catch (e) {
+        console.log('Failed to parse notifications JSON. May not be logged in.');
         needLogin();
         return;
       }
       showItems(items);
     } else {
-      // Network error?
-      needLogin();
+      console.log('Failed to fetch notifications with status ' + req.status + '.');
+      showMessage('通知の取得に失敗しました。');
     }
+  };
+  req.onerror = function () {
+    console.log('Error on fetching notifications.');
+    showMessage('通知の取得に失敗しました。');
   };
   req.send(null);
 }
@@ -71,19 +76,31 @@ function notifyRead() {
   var req = new XMLHttpRequest();
   req.open('GET', 'https://qiita.com/api/notifications/read', true);
   req.onload = function () {
-    if (req.status === 200) {
+    if (req.status === 204) { // Qiita returns 'no content' if successful.
       chrome.extension.sendMessage({ type: 'read' });
-    } else {
-      // Network error?
+    } else if (req.status === 200) {
+      console.log('Failed to notify read with status 200. May not be logged in.');
       needLogin();
+    } else {
+      console.log('Failed to notify read with status ' + req.status + '.');
+      // Do nothing.
     }
+  };
+  req.onerror = function () {
+    console.log('Error on notifying read.');
+    // Do nothing.
   };
   req.send(null);
 }
 
 function needLogin() {
+  showMessage('<a href="http://qiita.com/" target="_blank">ログインしてください。</a>');
+}
+
+function showMessage(message) {
+  document.body.innerHTML = '';
   var p = document.createElement('p');
-  p.innerHTML = '<a href="http://qiita.com/" target="_blank">ログインしてください。</a>';
+  p.innerHTML = message;
   document.body.appendChild(p);
 }
 

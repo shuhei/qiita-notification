@@ -13,7 +13,7 @@ function fetchCount() {
       try {
         json = JSON.parse(req.responseText);
       } catch (e) {
-        console.log('Failed to parse JSON.')
+        console.log('Failed to parse JSON. May not be logged in.');
         showNothing();
         return;
       }
@@ -25,12 +25,12 @@ function fetchCount() {
       }
       showCount(count);
     } else {
-      console.log('API Changed?', req.status, req.statusText);
+      console.log('Failed to fetch count with status', req.status, req.statusText);
       showNothing();
     }
   }, false);
   req.addEventListener('error', function () {
-    console.log('Failed to fetch count.');
+    console.log('Error on fetching count.');
     showNothing();
   }, false);
   req.send(null);
