@@ -56,6 +56,10 @@ function showItems(items) {
       return '<span class="username">' + user.url_name + '</span>';
     }).join(', ');
     var action = actions[item.action];
+    if (action === undefined) {
+      console.log('Unknown action ' + item.action + ' on ' + item.short_title);
+      return;
+    }
     var message;
     if (action.before && action.after) {
       message = action.before + '「' + item.short_title + '」' + action.after;
