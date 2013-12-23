@@ -1,3 +1,20 @@
+const TEMPLATES = {
+  stock:
+    '{{user_names}} があなたの投稿「{{short_title}}」を<span class="verb">ストック</span>しました。',
+  update_posted_chunk:
+    '{{user_names}} があなたのコメントした投稿「{{short_title}}」に<span class="verb">コメント</span>しました。',
+  follow_user:
+    '{{user_names}} があなたをフォローしました。',
+  reply:
+    '{{user_names}} があなたの投稿「{{short_title}}」に<span class="verb">コメント</span>しました。',
+  receive_patch:
+    '{{user_names}} があなたの投稿「{{short_title}}」へ<span class="verb">編集リクエストを</span>送りました。',
+  tweet:
+    'あなたの投稿「{{short_title}}」が<span class="verb">ツイート</span>されました。'
+};
+const ITEM_TEMPLATE =
+  '<a href="{{object}}" target="_blank">{{message}}<br><span class="created-at">{{created_at}}</span></a>';
+
 function fetchNotifications() {
   var req = new XMLHttpRequest();
   req.open('GET', 'https://qiita.com/api/notifications', true);
@@ -25,54 +42,46 @@ function fetchNotifications() {
   req.send(null);
 }
 
-var actions = {
-  'stock': {
-    before: ' があなたの投稿',
-    after: 'を<span class="verb">ストック</span>しました。'
-  },
-  'update_posted_chunk': {
-    before: ' があなたのコメントした投稿',
-    after: 'に<span class="verb">コメント</span>しました。'
-  },
-  'follow_user': {
-    body: ' があなたをフォローしました。'
-  },
-  'reply': {
-    before: ' があなたの投稿',
-    after: 'に<span class="verb">コメント</span>しました。'
-  },
-  'receive_patch': {
-    before: ' があなたの投稿',
-    after: 'へ<span class="verb">編集リクエストを</span>送りました。'
+function renderMessage(item) {
+  var template = TEMPLATES[item.action];
+  if (template === undefined) {
+    console.log('Unknown action ' + item.action + ' on ' + item.short_title);
+    return;
   }
-};
+  if (item.users !== undefined) {
+    item.user_names = renderUsers(item.users);
+  }
+
+  return renderTemplate(template, item);
+}
+
+function renderUsers(users) {
+  return users.map(function (user) {
+    return '<span class="username">' + user.url_name + '</span>';
+  }).join(', ');
+}
+
+// Replace `{{key}}` with `item[key]`.
+function renderTemplate(template, context) {
+  return template.replace(/\{\{([^\}]+)\}\}/g, function (match, key) {
+    return context[key];
+  });
+}
 
 function showItems(items) {
   document.body.innerHTML = '';
   items.forEach(function (item) {
     console.log(item);
-    var p = document.createElement("p");
-    var userNames = item.users.map(function (user) {
-      return '<span class="username">' + user.url_name + '</span>';
-    }).join(', ');
-    var action = actions[item.action];
-    if (action === undefined) {
-      console.log('Unknown action ' + item.action + ' on ' + item.short_title);
+    var itemContext = cloneObject(item);
+
+    itemContext.message = renderMessage(itemContext);
+    if (itemContext.message === undefined) {
       return;
     }
-    var message;
-    if (action.before && action.after) {
-      message = action.before + '「' + item.short_title + '」' + action.after;
-    } else {
-      message = action.body;
-    }
-    p.innerHTML = '<a href="' + item.object + '" target="_blank">' +
-      userNames +
-      message +
-      '<br>' +
-      '<span class="created-at">' + item.created_at + '</span>' +
-      '</a>';
-    p.classList.add(item.seen ? 'seen' : 'unseen');
+
+    var p = document.createElement("p");
+    p.innerHTML = renderTemplate(ITEM_TEMPLATE, itemContext);
+    p.classList.add(itemContext.seen ? 'seen' : 'unseen');
     document.body.appendChild(p);
   });
 }
@@ -112,6 +121,14 @@ function showMessage(message) {
   var p = document.createElement('p');
   p.innerHTML = message;
   document.body.appendChild(p);
+}
+
+function cloneObject(original) {
+  var clone = {};
+  for (var k in original) {
+    clone[k] = original[k];
+  }
+  return clone;
 }
 
 fetchNotifications();
