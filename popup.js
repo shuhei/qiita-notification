@@ -10,7 +10,9 @@ const TEMPLATES = {
   receive_patch:
     '{{user_names}} があなたの投稿「{{short_title}}」へ<span class="verb">編集リクエストを</span>送りました。',
   tweet:
-    'あなたの投稿「{{short_title}}」が<span class="verb">ツイート</span>されました。'
+    'あなたの投稿「{{short_title}}」が<span class="verb">ツイート</span>されました。',
+  new_comment_for_stocker:
+    '{{user_names}} があなたのストックした投稿「{{short_title}}」で<span class="verb">コメント</span>しました。'
 };
 const ITEM_TEMPLATE =
   '<a href="{{object}}" target="_blank">{{message}}<br><span class="created-at">{{created_at}}</span></a>';
